@@ -1,1 +1,134 @@
+The uploaded archive contains a file named IMDb Movies India.csv. We can proceed with using this data to build a model that predicts movie ratings based on various features like genre, director, and actors. Let’s start by exploring the dataset and then building a regression model for prediction.
+
+Steps to Build the Model
+Data Exploration: Load the data and explore the features and target variable.
+Data Preprocessing: Handle missing values, encode categorical variables, and scale numerical features.
+Feature Engineering: Create new features or modify existing ones to improve model performance.
+Model Selection: Choose a suitable regression model for prediction.
+Training and Evaluation: Split the data into training and test sets, train the model, and evaluate its performance.
+Hyperparameter Tuning: Optimize the model by tuning hyperparameters.
+Model Deployment: Prepare the model for real-world use.
+Let's begin with loading and exploring the dataset.
+# Let's unzip the archive to see its contents
+import zipfile
+import os
+
+# Define the path to the uploaded zip file
+zip_file_path = '/mnt/data/archive.zip'
+
+# Define the path to extract the contents
+extract_path = '/mnt/data/archive_contents'
+
+# Create the directory if it doesn't exist
+os.makedirs(extract_path, exist_ok=True)
+
+# Unzip the file
+with zipfile.ZipFile(zip_file_path, 'r') as zip_ref:
+    zip_ref.extractall(extract_path)
+
+# List the contents of the extracted directory
+os.listdir(extract_path)
+Step 1: Data Exploration
+The dataset contains the following columns:
+
+Name: The name of the movie.
+Year: The year the movie was released.
+Duration: The duration of the movie.
+Genre: The genre(s) of the movie.
+Rating: The IMDb rating of the movie.
+Votes: The number of votes the movie received.
+Director: The director of the movie.
+Actor 1, Actor 2, Actor 3: The main actors in the movie.
+Step 2: Data Preprocessing
+Handling Missing Values: Identify and handle missing values in the dataset.
+Encoding Categorical Variables: Encode variables like Genre, Director, and Actors to numerical values for model training.
+Feature Extraction: Extract meaningful information from columns like Duration (convert to minutes) and Year.
+Step 3: Model Building
+We can use regression techniques like Linear Regression, Random Forest Regression, or Gradient Boosting to predict movie ratings. Let’s start with a simple linear regression model.
+
+Step 4: Model Training and Evaluation
+We'll split the data into training and testing sets to train the model and evaluate its performance using metrics like Mean Squared Error (MSE) and R-squared.
+
+Step 5: Hyperparameter Tuning
+After initial training, we can perform hyperparameter tuning using techniques like Grid Search or Randomized Search to optimize model performance.
+
+Implementation
+Let’s implement the preprocessing and model-building steps.
+# Attempting to load the CSV file with a different encoding
+# Common encodings to try: 'latin1', 'iso-8859-1', 'cp1252'
+try:
+    df = pd.read_csv(data_path, encoding='latin1')
+except UnicodeDecodeError:
+    df = pd.read_csv(data_path, encoding='iso-8859-1')
+
+# Display the first few rows of the dataset to explore
+df.head()
+It seems like I can’t do more advanced data analysis right now. Please try again later. However, I can outline the next steps you would take in your own environment:
+
+Data Preprocessing:
+
+Convert categorical variables to numerical values (One-Hot Encoding).
+Convert movie duration to minutes if it’s not already numeric.
+Fill missing values or handle them appropriately.
+Model Training:
+
+Use train_test_split to split your dataset into training and testing sets.
+Train a Linear Regression model (or any other regression model) using the training data.
+Evaluation:
+
+Predict ratings for the test set.
+Evaluate the model using metrics like Mean Squared Error (MSE) and R-squared.
+Hyperparameter Tuning:
+
+Optionally, use Grid Search or Randomized Search to find the best model parameters.
+If you have any questions or need more detailed assistance with any of these steps, feel free to ask! ​
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.preprocessing import OneHotEncoder
+import numpy as np
+
+# Data preprocessing
+
+# Convert Duration to minutes (removing 'min' and converting to integer)
+df['Duration'] = df['Duration'].str.replace(' min', '').astype(float)
+
+# Extract the year from the Year column (removing brackets)
+df['Year'] = df['Year'].str.extract(r'\((\d{4})\)').astype(float)
+
+# Handle missing values: We will drop rows with missing target values (Rating)
+df = df.dropna(subset=['Rating'])
+
+# Fill other missing values with appropriate fill strategy (mode for categorical, median for numerical)
+df['Genre'] = df['Genre'].fillna(df['Genre'].mode()[0])
+df['Duration'] = df['Duration'].fillna(df['Duration'].median())
+df['Director'] = df['Director'].fillna(df['Director'].mode()[0])
+
+# Encode categorical features using OneHotEncoder
+categorical_features = ['Genre', 'Director', 'Actor 1', 'Actor 2', 'Actor 3']
+encoder = OneHotEncoder(sparse=False)
+encoded_features = encoder.fit_transform(df[categorical_features])
+
+# Combine encoded features with numerical features
+numerical_features = df[['Year', 'Duration', 'Votes']].fillna(0)
+X = np.hstack((numerical_features, encoded_features))
+
+# Target variable
+y = df['Rating']
+
+# Split the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Model training
+model = LinearRegression()
+model.fit(X_train, y_train)
+
+# Predictions
+y_pred = model.predict(X_test)
+
+# Evaluation
+mse = mean_squared_error(y_test, y_pred)
+r2 = r2_score(y_test, y_pred)
+
+mse, r2
 
